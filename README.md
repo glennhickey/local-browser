@@ -88,7 +88,7 @@ ruby -rwebrick -e'WEBrick::HTTPServer.new(:Port => 9000, :DocumentRoot => Dir.pw
 
 Visit `127.0.0.1:8000` in a Web Browser.  Click `My Data` on the top then `Track Hubs`.  The screen will go blank for a few minutes the first time you do this as the GBIC installation apparently needs to pull in some files when loading this page the first time.
 
-Eventually the menu will come up.  Click `Connected Hubs` on the middle tab near the top.  Paste in the URL for your local hub, where the path is relative to /data.  For example, `127.0.0.1:8000/test-hub/hub.txt`).
+Eventually the menu will come up.  Click `Connected Hubs` on the middle tab near the top.  Paste in the URL for your local hub, where the path is relative to /data.  For example, `0.0.0.0:9000/test-hub/hub.txt`).
 
 Important: if your hub has a reference that is not hg38 but the Browser still recognizes, you may be in trouble. In my case, I wanted to use `hs1` as a reference but was unable to as the Browser expected but couldn't find a bunch of local hub files in `/gbdb`).  I worked around this by renaming `hs1` to `human`.
 
