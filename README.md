@@ -9,6 +9,7 @@ I want to patch the part of the [HAL API](https://github.com/ComparativeGenomics
 ## Challenges
 
 * Building the [Kent Source](https://github.com/ucscGenomeBrowser/kent) on Ubuntu 22.04 isn't easy. As far as I can tell it wants older versions openssl and mysql then are available from `apt` in this OS.  It also wants to write output binaries in various system-level places.  Linking in HAL (which is optional in general but necessary for me) only complicates matters.
+* The same story applies to the Browser's own [Dockerfile](https://github.com/ucscGenomeBrowser/kent/blob/master/src/product/installer/docker/Dockerfile).  It gives you a running Browser which is great, but I was not able to use to to build the source for the reasons mentioned above. 
 * Running the Browser itself is nontrivial, requiring the setup of an Apache web server, mySQL database, and various data files needed to get a mirror going.
 * Track hubs (which I need to debug) must be specified via HTTP URL, but my usual public hubs are too slow to be used from my home network.
 
