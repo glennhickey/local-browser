@@ -99,6 +99,8 @@ Right now, the browser is running 100% from the GBIC installation. Everything co
 
 **Note** If you get a linker error from HAL, run `make clean` (in hal) then rerun.  You should only ever need to do this once.
 
+**Also** I think it may be necessary to load up a hub at least once *before* patching hal below. 
+
 ```
 cp -r /home/hickey/dev/hal/blockViz .
 docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 && cd /kent && cd src ; make clean ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hg* /usr/local/apache/cgi-bin/'
