@@ -68,10 +68,10 @@ Make sure to download the track hub (ie from `hal2assemblyhub.py`) locally.  Bel
 
 ### Start the Browser Container Locally
 
-On my Desktop, I start the container with
+On my Desktop, I start the container with (`--cap-add=SYS_PTRACE --security-opt seccomp=unconfined` is just to help with gdb)
 
 ```
-docker run -it --name browser-test -p 8000:80 -v $(pwd):/data quay.io/glennhickey/local-browser:latest bash
+docker run -it --name browser-test -p 8000:80 -v $(pwd):/data quay.io/glennhickey/local-browser:latest --cap-add=SYS_PTRACE --security-opt seccomp=unconfined bash
 ```
 
 Then inside the container, I start three services.  The apache server on port 80, accessible from outside the container on 8000, the mysql server, and a simple webserver to give the hub a URL, in this case on port 9000.
@@ -106,7 +106,7 @@ docker exec -it browser-test bash -c "sed -i /usr/local/apache/cgi-bin/hg.conf -
 
 ```
 cp -r /home/hickey/dev/hal/blockViz .
-docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 && cd /kent && cd src ; make clean ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hgTracks /usr/local/apache/cgi-bin/'
+docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 && cd /kent && cd src ; touch hg/hgTracks/*ake*.c ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hgTracks /usr/local/apache/cgi-bin/'
 ```
 
 This will patch the `blockViz` directory in the container's HAL, rebuild that HAL, rebuild the container's Browser linking to the patched HAL, then copy over the binaries into the GBIC browser's cgi-bin.  Once it's done, your browser (that you connected to above at `127.0.0.1:8000`) will use the new HAL the next time you refresh or click anything.
