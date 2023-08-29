@@ -97,19 +97,17 @@ Important: if your hub has a reference that is not hg38 but the Browser still re
 
 Right now, the browser is running 100% from the GBIC installation. Everything compiled in the Docker image is ignored.  To swap in a local HAL repo (let's assume it's installed in `/home/hickey/dev/hal`), run from `local-browser/` (note: `browser-test` was specified using `--name` above):
 
-**Note** If you get a linker error from HAL, run `make clean` (in hal) then rerun.  You should only ever need to do this once.
+I always load up an assembly hub before doing any of the below commands, just to make sure it works.  Note that it takes a long time to even get the hub loading menu the first time. 
 
-**Also** I think it may be necessary to load up a hub at least once *before* patching hal below. 
+Run this once before patching the first time:
+```
+docker exec -it browser-test bash -c "sed -i /usr/local/apache/cgi-bin/hg.conf -e 's/freeType=on/freeType=off/g'; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal ; make clean"
+```
 
 ```
 cp -r /home/hickey/dev/hal/blockViz .
-docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 && cd /kent && cd src ; make clean ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hg* /usr/local/apache/cgi-bin/'
+docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 && cd /kent && cd src ; make clean ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hgTracks /usr/local/apache/cgi-bin/'
 ```
 
 This will patch the `blockViz` directory in the container's HAL, rebuild that HAL, rebuild the container's Browser linking to the patched HAL, then copy over the binaries into the GBIC browser's cgi-bin.  Once it's done, your browser (that you connected to above at `127.0.0.1:8000`) will use the new HAL the next time you refresh or click anything.
 
-You might get a "FreeType" related error the first time you do this.  If that happens, run
-
-```
-docker exec -it browser-test bash -c "sed -i /usr/local/apache/cgi-bin/hg.conf -e 's/freeType=on/freeType=off/g'"
-```
