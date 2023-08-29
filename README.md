@@ -79,7 +79,7 @@ Then inside the container, I start three services.  The apache server on port 80
 For the latter, I use Ruby because it supports HTTP Range Requests and runs fine on Ubuntu:18.04.
 
 ```
-service apache start
+service apache2 start
 service mysql start
 cd /data
 ruby -rwebrick -e'WEBrick::HTTPServer.new(:Port => 9000, :DocumentRoot => Dir.pwd).start'
@@ -97,9 +97,11 @@ Important: if your hub has a reference that is not hg38 but the Browser still re
 
 Right now, the browser is running 100% from the GBIC installation. Everything compiled in the Docker image is ignored.  To swap in a local HAL repo (let's assume it's installed in `/home/hickey/dev/hal`), run from `local-browser/` (note: `browser-test` was specified using `--name` above):
 
+**Note** If you get a linker error from HAL, run `make clean` (in hal) then rerun.  You should only ever need to do this once.
+
 ```
 cp -r /home/hickey/dev/hal/blockViz .
-docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 ; cd /kent && cd src ; make clean ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hg* /usr/local/apache/cgi-bin/'
+docker exec -it browser-test bash -c 'mv /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz /hive/groups/browser/hal/build/hal.2020-12-18/hal/blockViz.bak ; cp -r /data/blockViz  /hive/groups/browser/hal/build/hal.2020-12-18/hal ; cd /hive/groups/browser/hal/build/hal.2020-12-18/hal/ ;  export PATH=/hive/groups/browser/hal/build/hdf5-1.12.0/local/bin:$PATH && export ENABLE_UDC=1 && export KENTSRC=/kent/src && make -j8 && cd /kent && cd src ; make clean ; make -j8 libs ; cd hg ; make -j8 ; cd ../utils ; make -j8 ; cp /usr/local/apache/cgi-bin-docker/hg* /usr/local/apache/cgi-bin/'
 ```
 
 This will patch the `blockViz` directory in the container's HAL, rebuild that HAL, rebuild the container's Browser linking to the patched HAL, then copy over the binaries into the GBIC browser's cgi-bin.  Once it's done, your browser (that you connected to above at `127.0.0.1:8000`) will use the new HAL the next time you refresh or click anything.
